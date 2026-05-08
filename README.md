@@ -8,9 +8,9 @@ A full-featured Blog CMS (Content Management System) built for government job up
 
 | | Link |
 |---|---|
-| 🌐 **Live Website** | `https://YOUR-USERNAME.github.io/blogcms/` |
-| ⚙️ **Admin Panel** | `https://YOUR-USERNAME.github.io/blogcms/` → click **Sign In** |
-| 📦 **GitHub Repo** | `https://github.com/YOUR-USERNAME/blogcms` |
+| 🌐 **Live Website** | `https://sparshag7102.github.io/blogcms/` |
+| ⚙️ **Admin Panel** | `https://sparshag7102.github.io/blogcms/` → click **Sign In** |
+| 📦 **GitHub Repo** | `https://github.com/sparshag7102/blogcms` |
 
 > **Admin Credentials**
 > - Username: `admin`
@@ -104,7 +104,7 @@ npx serve .
 2. Create a new repository named `blogcms`
 3. Upload `index.html` and `README.md`
 4. Go to **Settings → Pages → Source: main branch**
-5. Your live URL: `https://YOUR-USERNAME.github.io/blogcms/`
+5. Your live URL: `https://sparshag7102.github.io/blogcms/`
 
 ---
 
