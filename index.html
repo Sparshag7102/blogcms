@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GovJobPortal – Blog CMS</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1a1a2e;--accent:#e94560;--accent2:#0f3460;--gold:#f5a623;
+  --bg:#f5f4f1;--card:#fff;--text:#1a1a2e;--muted:#6b7280;--border:#e5e7eb;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+  --radius:10px;--font:'DM Sans',system-ui,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+a{text-decoration:none;color:inherit;cursor:pointer}
+button{cursor:pointer;font-family:var(--font)}
+input,select,textarea{font-family:var(--font)}
+.hidden{display:none!important}
+
+/* SCREEN MANAGEMENT */
+.screen{display:none;min-height:600px}
+.screen.active{display:block}
+
+/* ============ LOGIN ============ */
+#screen-login{background:linear-gradient(135deg,var(--primary) 0%,var(--accent2) 100%);display:flex;align-items:center;justify-content:center;padding:2rem;min-height:600px}
+.login-box{background:#fff;border-radius:16px;padding:2.5rem;width:360px;max-width:100%}
+.login-logo{font-size:1.8rem;font-weight:700;text-align:center;margin-bottom:.25rem;color:var(--primary)}
+.login-logo span{color:var(--accent)}
+.login-sub{text-align:center;color:var(--muted);font-size:.82rem;margin-bottom:1.75rem}
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-size:.78rem;font-weight:600;margin-bottom:4px}
+.form-control{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 13px;font-size:.875rem;font-family:var(--font);color:var(--text);background:#fff;transition:border .2s}
+.form-control:focus{outline:none;border-color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-size:.875rem;font-weight:600;border:none;transition:opacity .2s;white-space:nowrap}
+.btn:hover{opacity:.85}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:var(--bg);color:var(--text);border:1.5px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);opacity:1}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:5px 11px;font-size:.78rem}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-full{width:100%;justify-content:center}
+.demo-hint{margin-top:1rem;padding:9px 13px;background:#f8f7f4;border-radius:8px;font-size:.76rem;color:var(--muted);text-align:center}
+.alert{padding:.75rem 1rem;border-radius:8px;font-size:.84rem;margin-bottom:1rem}
+.alert-danger{background:#fee2e2;color:#dc2626}
+.alert-success{background:#d1fae5;color:#065f46}
+
+/* ============ ADMIN LAYOUT ============ */
+#screen-admin{display:none;min-height:600px}
+#screen-admin.active{display:flex}
+.sidebar{width:220px;background:var(--primary);display:flex;flex-direction:column;flex-shrink:0}
+.sb-brand{padding:1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-brand h1{font-size:1.1rem;font-weight:700;color:#fff}
+.sb-brand h1 span{color:var(--accent)}
+.sb-brand p{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:1px}
+.sb-nav{padding:.75rem .625rem;flex:1}
+.nav-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);padding:.75rem .375rem .3rem}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;color:rgba(255,255,255,.6);font-size:.82rem;font-weight:500;margin-bottom:1px;transition:all .15s;cursor:pointer}
+.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(233,69,96,.2);color:var(--accent)}
+.nav-item i{font-size:1rem;width:16px;text-align:center}
+.sb-footer{padding:.875rem .625rem;border-top:1px solid rgba(255,255,255,.1)}
+.avatar-row{display:flex;align-items:center;gap:.625rem}
+.avatar-circle{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.8rem;flex-shrink:0}
+.avatar-name{font-size:.8rem;color:#fff}
+.avatar-role{font-size:.68rem;color:rgba(255,255,255,.45)}
+.logout-link{font-size:.72rem;color:rgba(255,255,255,.45);cursor:pointer}
+.logout-link:hover{color:var(--accent)}
+.main-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:.95rem;font-weight:600}
+.topbar-right{display:flex;gap:.5rem;align-items:center}
+.page-content{padding:1.5rem;flex:1;overflow-y:auto;max-height:544px}
+
+/* ============ ADMIN PAGES ============ */
+.admin-page{display:none}
+.admin-page.active{display:block}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:1.5rem}
+.stat-card{background:#fff;border-radius:var(--radius);padding:1rem;border:1px solid var(--border)}
+.stat-num{font-size:2rem;font-weight:700;line-height:1}
+.stat-label{font-size:.75rem;color:var(--muted);margin-top:3px}
+.stat-card.c1 .stat-num{color:var(--accent)}
+.stat-card.c2 .stat-num{color:var(--accent2)}
+.stat-card.c3 .stat-num{color:var(--warning)}
+.stat-card.c4 .stat-num{color:var(--success)}
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
+.card-header{padding:.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header h3{font-size:.9rem;font-weight:600}
+.card-body{padding:1.25rem}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;padding:9px 12px;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);background:#fafafa}
+.data-table td{padding:10px 12px;font-size:.82rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#fafaf9}
+.title-cell{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.action-cell{display:flex;gap:.3rem}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.68rem;font-weight:700}
+.badge-published{background:#d1fae5;color:#065f46}
+.badge-draft{background:#f3f4f6;color:#374151}
+.cat-jobs{background:#fef3c7;color:#92400e}
+.cat-admit{background:#dbeafe;color:#1e40af}
+.cat-results{background:#d1fae5;color:#065f46}
+.cat-scheme{background:#ede9fe;color:#5b21b6}
+.cat-news{background:#fce7f3;color:#9d174d}
+.cat-default{background:#f3f4f6;color:#374151}
+
+/* ============ BLOG FORM ============ */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.875rem}
+.form-hint{font-size:.72rem;color:var(--muted);margin-top:3px}
+.editor-toolbar{display:flex;flex-wrap:wrap;gap:2px;padding:7px 8px;background:#f9fafb;border:1.5px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0}
+.tb-btn{background:none;border:1px solid transparent;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:.76rem;color:var(--text);transition:all .12s}
+.tb-btn:hover{background:var(--border)}
+.tb-sep{width:1px;background:var(--border);margin:0 3px;align-self:stretch}
+.editor-area{min-height:280px;border:1.5px solid var(--border);border-radius:0 0 8px 8px;padding:12px;font-size:.88rem;line-height:1.75;outline:none;background:#fff;overflow-y:auto}
+.editor-area:focus{border-color:var(--accent)}
+.editor-area h1{font-size:1.6rem;margin-bottom:.4rem}
+.editor-area h2{font-size:1.25rem;margin-bottom:.35rem}
+.editor-area h3{font-size:1.05rem;font-weight:700;margin-bottom:.3rem}
+.editor-area ul,.editor-area ol{padding-left:1.5rem;margin:.3rem 0}
+.editor-area table{border-collapse:collapse;width:100%;margin:.5rem 0}
+.editor-area td,.editor-area th{border:1px solid #d1d5db;padding:5px 9px}
+.editor-area th{background:#f3f4f6;font-weight:600}
+.editor-area blockquote{border-left:3px solid var(--accent);padding-left:.875rem;color:var(--muted);font-style:italic;margin:.4rem 0}
+.editor-area img{max-width:100%;border-radius:6px;margin:.4rem 0}
+.img-upload-zone{border:2px dashed var(--border);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.img-upload-zone:hover{border-color:var(--accent);background:#fff5f5}
+.img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-upload-zone p{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.img-preview-wrap{position:relative;display:inline-block;margin-top:.75rem}
+.img-preview-wrap img{max-height:140px;border-radius:8px;display:block}
+.img-remove{position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.form-actions{display:flex;gap:.625rem;padding-top:1rem;border-top:1px solid var(--border);margin-top:1rem}
+
+/* ============ PUBLIC FRONTEND ============ */
+#screen-public{display:none;min-height:600px}
+#screen-public.active{display:block;background:var(--bg)}
+.pub-nav{background:var(--primary);position:sticky;top:0;z-index:100}
+.pub-nav-inner{max-width:100%;padding:0 1rem;display:flex;align-items:center;justify-content:space-between;height:52px}
+.pub-brand{font-size:1.2rem;font-weight:700;color:#fff}
+.pub-brand span{color:var(--accent)}
+.pub-nav-links{display:flex;gap:1.25rem;list-style:none}
+.pub-nav-links a{color:rgba(255,255,255,.7);font-size:.78rem;font-weight:500;transition:color .2s;cursor:pointer}
+.pub-nav-links a:hover{color:#fff}
+.pub-search{position:relative}
+.pub-search input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:6px 12px 6px 30px;color:#fff;font-size:.78rem;width:170px;transition:all .3s}
+.pub-search input::placeholder{color:rgba(255,255,255,.5)}
+.pub-search input:focus{outline:none;background:rgba(255,255,255,.15);width:200px}
+.pub-search i{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.55);font-size:.875rem}
+.hero{background:linear-gradient(135deg,var(--primary) 0%,var(--accent2) 60%,#16213e 100%);padding:2.5rem 1rem 2rem;text-align:center;color:#fff}
+.hero h1{font-size:1.6rem;font-weight:900;line-height:1.2;margin-bottom:.5rem}
+.hero p{color:rgba(255,255,255,.75);font-size:.875rem;margin:0 auto .5rem}
+.hero-stats{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:1rem}
+.hero-stat{color:rgba(255,255,255,.75);font-size:.78rem}
+.hero-stat strong{color:#fff;font-size:1.1rem;font-weight:700;display:block}
+.filter-bar{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:90}
+.filter-inner{padding:.75rem 1rem;display:flex;align-items:center;flex-wrap:wrap;gap:.625rem}
+.filter-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);white-space:nowrap}
+.filter-pills{display:flex;flex-wrap:wrap;gap:.35rem;flex:1}
+.filter-btn{border:1.5px solid var(--border);background:#fff;border-radius:18px;padding:5px 13px;font-size:.74rem;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s;color:var(--muted)}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.date-filter{display:flex;align-items:center;gap:.4rem}
+.date-filter label{font-size:.74rem;color:var(--muted)}
+.date-filter input{border:1.5px solid var(--border);border-radius:7px;padding:5px 8px;font-size:.74rem;cursor:pointer}
+.date-filter input:focus{outline:none;border-color:var(--accent)}
+.pub-section{padding:1.5rem 1rem}
+.pub-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.pub-section-head h2{font-size:1.1rem;font-weight:700}
+.result-count{font-size:.75rem;color:var(--muted)}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.blog-card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;cursor:pointer}
+.blog-card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(0,0,0,.09)}
+.card-thumb{height:160px;background:linear-gradient(135deg,var(--accent2),var(--primary));position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:3rem}
+.card-thumb img{width:100%;height:100%;object-fit:cover}
+.card-cat-badge{position:absolute;top:8px;left:8px}
+.card-body-pub{padding:1rem;flex:1;display:flex;flex-direction:column}
+.card-title-pub{font-size:.95rem;font-weight:700;line-height:1.35;margin-bottom:.4rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-excerpt-pub{font-size:.78rem;color:var(--muted);line-height:1.6;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.875rem}
+.card-footer-pub{display:flex;align-items:center;justify-content:space-between;padding-top:.75rem;border-top:1px solid var(--border)}
+.card-date-pub{font-size:.7rem;color:var(--muted)}
+.btn-read{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 13px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.btn-read:hover{opacity:.85}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);grid-column:1/-1}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+.empty-state h3{font-size:.95rem;color:var(--text);margin-bottom:.25rem}
+
+/* PAGINATION */
+.pagination{display:flex;justify-content:center;align-items:center;gap:.4rem;margin-top:1.5rem;flex-wrap:wrap}
+.page-btn{background:#fff;border:1.5px solid var(--border);border-radius:7px;padding:6px 12px;font-size:.78rem;cursor:pointer;font-family:var(--font);transition:all .2s}
+.page-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.page-btn:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+
+/* BLOG DETAIL */
+.detail-hero{background:linear-gradient(135deg,var(--primary) 0%,var(--accent2) 100%);padding:2rem 1rem;color:#fff}
+.detail-breadcrumb{font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:.75rem}
+.detail-breadcrumb span{cursor:pointer;color:rgba(255,255,255,.75)}
+.detail-breadcrumb span:hover{color:#fff}
+.detail-title{font-size:1.4rem;font-weight:900;line-height:1.2;max-width:720px}
+.detail-meta{display:flex;gap:1rem;margin-top:.75rem;font-size:.76rem;color:rgba(255,255,255,.65);align-items:center;flex-wrap:wrap}
+.detail-body{max-width:760px;margin:2rem auto;padding:0 1rem 2.5rem}
+.back-link{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-weight:600;font-size:.8rem;margin-bottom:1.5rem;cursor:pointer;background:none;border:none}
+.detail-content{font-size:.95rem;line-height:1.8;color:#2d2d2d}
+.detail-content h1,.detail-content h2{margin:1.5rem 0 .5rem}
+.detail-content h1{font-size:1.6rem}
+.detail-content h2{font-size:1.25rem}
+.detail-content h3{font-size:1.05rem;font-weight:700;margin:1rem 0 .35rem}
+.detail-content p{margin-bottom:.875rem}
+.detail-content ul,.detail-content ol{padding-left:1.5rem;margin:.5rem 0 .875rem}
+.detail-content li{margin-bottom:.25rem}
+.detail-content table{border-collapse:collapse;width:100%;margin:1rem 0;border-radius:7px;overflow:hidden;border:1px solid var(--border)}
+.detail-content th{background:var(--primary);color:#fff;text-align:left;padding:9px 12px;font-size:.82rem}
+.detail-content td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:.85rem}
+.detail-content tr:last-child td{border-bottom:none}
+.detail-content tr:nth-child(even) td{background:#fafafa}
+.detail-content blockquote{border-left:4px solid var(--accent);background:#fff5f5;padding:.875rem 1.1rem;border-radius:0 7px 7px 0;margin:1rem 0;color:#7f1d1d;font-style:italic}
+.related-section{background:var(--bg);padding:1.5rem 1rem;border-top:1px solid var(--border)}
+.related-section h2{font-size:1.1rem;font-weight:700;margin-bottom:1rem;padding:0 0 0 0}
+.pub-footer{background:var(--primary);color:rgba(255,255,255,.6);padding:1.5rem 1rem;text-align:center;font-size:.78rem}
+.pub-footer a{color:rgba(255,255,255,.75)}
+
+/* ============ MOBILE RESPONSIVE ============ */
+@media(max-width:640px){
+  .pub-nav-inner{flex-wrap:wrap;height:auto;padding:.5rem 1rem;gap:.4rem}
+  .pub-nav-links{display:none}
+  .pub-brand{font-size:1rem}
+  .pub-search input{width:130px}
+  .hero h1{font-size:1.2rem}
+  .hero-stats{gap:1rem}
+  .filter-inner{flex-direction:column;align-items:flex-start}
+  .filter-pills{gap:.3rem}
+  .filter-btn{padding:4px 10px;font-size:.72rem}
+  .blog-grid{grid-template-columns:1fr}
+  .detail-title{font-size:1.1rem}
+  .detail-body{padding:0 .75rem 2rem}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .sidebar{width:180px}
+  .form-row{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .sidebar{display:none}
+  .main-content{width:100%}
+}
+
+/* TOAST */
+.toast{position:fixed;bottom:1rem;right:1rem;padding:10px 18px;border-radius:9px;font-size:.82rem;font-weight:500;color:#fff;z-index:9999;animation:slideUp .3s ease}
+.toast-success{background:var(--success)}
+.toast-error{background:var(--danger)}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* MODAL */
+.modal-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:1.75rem;max-width:380px;width:90%}
+.modal h3{font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.modal p{color:var(--muted);font-size:.82rem;margin-bottom:1.25rem}
+.modal-btns{display:flex;gap:.625rem;justify-content:flex-end}
+
+.spinner-wrap{display:flex;justify-content:center;padding:2rem}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Tab nav inside admin add-edit form */
+.form-section-title{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:.75rem 0 .5rem;padding-bottom:.3rem;border-bottom:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<div id="screen-login" class="screen active" style="display:flex">
+  <div class="login-box">
+    <div class="login-logo">Blog<span>CMS</span></div>
+    <p class="login-sub">Admin Panel — Sign in to continue</p>
+    <div id="login-error" class="alert alert-danger hidden"></div>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input class="form-control" id="login-user" type="text" placeholder="Enter username" value="admin">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-control" id="login-pass" type="password" placeholder="Enter password" value="admin123">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In <i class="ti ti-arrow-right"></i></button>
+    <div class="demo-hint">Demo credentials: <strong>admin</strong> / <strong>admin123</strong></div>
+    <div style="text-align:center;margin-top:.875rem">
+      <a style="font-size:.76rem;color:var(--muted);cursor:pointer" onclick="showPublic()">← View public website instead</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN SCREEN ===================== -->
+<div id="screen-admin" class="screen" style="position:relative">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-brand"><h1>Blog<span>CMS</span></h1><p>Admin Panel</p></div>
+    <nav class="sb-nav">
+      <div class="nav-label">Main</div>
+      <a class="nav-item active" onclick="showAdminPage('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+      <a class="nav-item" onclick="showAdminPage('all-blogs',this)"><i class="ti ti-article"></i> All Blogs</a>
+      <a class="nav-item" onclick="showAdminPage('add-blog',this);resetBlogForm()"><i class="ti ti-edit"></i> New Blog</a>
+      <div class="nav-label">Website</div>
+      <a class="nav-item" onclick="showPublic()"><i class="ti ti-world"></i> View Site</a>
+    </nav>
+    <div class="sb-footer">
+      <div class="avatar-row">
+        <div class="avatar-circle">A</div>
+        <div>
+          <div class="avatar-name">admin</div>
+          <div class="avatar-role">Administrator</div>
+          <div class="logout-link" onclick="doLogout()">Sign out →</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <div class="topbar">
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <div class="topbar-right">
+        <button class="btn btn-primary btn-sm" onclick="showAdminPage('add-blog');resetBlogForm();highlightNav('add-blog')"><i class="ti ti-plus"></i> New Blog</button>
+        <button class="btn btn-secondary btn-sm" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div id="admin-flash" class="hidden"></div>
+
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="admin-page active">
+        <div class="stats-row">
+          <div class="stat-card c1"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Blogs</div></div>
+          <div class="stat-card c2"><div class="stat-num" id="stat-pub">0</div><div class="stat-label">Published</div></div>
+          <div class="stat-card c3"><div class="stat-num" id="stat-draft">0</div><div class="stat-label">Drafts</div></div>
+          <div class="stat-card c4"><div class="stat-num" id="stat-cats">5</div><div class="stat-label">Categories</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Recent Posts</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAdminPage('all-blogs');highlightNav('all-blogs')">View All →</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table" id="dash-table">
+              <thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="dash-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.875rem;margin-top:1.25rem">
+          <button class="btn btn-primary" style="justify-content:center;padding:.875rem" onclick="showAdminPage('add-blog');resetBlogForm();highlightNav('add-blog')"><i class="ti ti-edit"></i> Write New Blog</button>
+          <button class="btn btn-secondary" style="justify-content:center;padding:.875rem" onclick="showAdminPage('all-blogs');highlightNav('all-blogs')"><i class="ti ti-list"></i> Manage Blogs</button>
+          <button class="btn btn-outline" style="justify-content:center;padding:.875rem" onclick="showPublic()"><i class="ti ti-world"></i> View Website</button>
+        </div>
+      </div>
+
+      <!-- ALL BLOGS -->
+      <div id="page-all-blogs" class="admin-page">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+          <div>
+            <h2 style="font-size:1.05rem;font-weight:700">All Blog Posts</h2>
+            <p id="blogs-count-label" style="font-size:.75rem;color:var(--muted)"></p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="showAdminPage('add-blog');resetBlogForm();highlightNav('add-blog')"><i class="ti ti-plus"></i> New Blog</button>
+        </div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="card-body" style="padding:.875rem 1rem">
+            <div style="display:flex;flex-wrap:wrap;gap:.625rem;align-items:flex-end">
+              <div style="flex:1;min-width:140px">
+                <label class="form-label" style="font-size:.72rem">Search</label>
+                <input class="form-control" id="admin-search" placeholder="Title..." style="padding:7px 11px;font-size:.82rem">
+              </div>
+              <div style="min-width:130px">
+                <label class="form-label" style="font-size:.72rem">Category</label>
+                <select class="form-control" id="admin-cat-filter" style="padding:7px 11px;font-size:.82rem">
+                  <option value="">All</option>
+                  <option value="Latest Jobs">Latest Jobs</option>
+                  <option value="Admit Card">Admit Card</option>
+                  <option value="Results">Results</option>
+                  <option value="Government Scheme">Government Scheme</option>
+                  <option value="Breaking News">Breaking News</option>
+                </select>
+              </div>
+              <div style="min-width:120px">
+                <label class="form-label" style="font-size:.72rem">Status</label>
+                <select class="form-control" id="admin-status-filter" style="padding:7px 11px;font-size:.82rem">
+                  <option value="">All</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                </select>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="document.getElementById('admin-search').value='';document.getElementById('admin-cat-filter').value='';document.getElementById('admin-status-filter').value='';renderBlogsTable()">Reset</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="overflow-x:auto">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>Title</th><th>Category</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="blogs-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD / EDIT BLOG -->
+      <div id="page-add-blog" class="admin-page">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+          <h2 id="form-page-title" style="font-size:1.05rem;font-weight:700">New Blog Post</h2>
+        </div>
+        <div id="admin-form-flash" class="hidden"></div>
+        <input type="hidden" id="edit-blog-id" value="">
+        <div class="card card-body" style="padding:1.25rem">
+          <div class="form-group">
+            <label class="form-label">Title <span style="color:var(--danger)">*</span></label>
+            <input class="form-control" id="f-title" placeholder="Blog post title..." oninput="autoSlug()">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Slug</label>
+              <input class="form-control" id="f-slug" placeholder="auto-generated-from-title">
+              <p class="form-hint">URL-friendly identifier</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category <span style="color:var(--danger)">*</span></label>
+              <select class="form-control" id="f-cat">
+                <option value="">— Select Category —</option>
+                <option value="Latest Jobs">Latest Jobs</option>
+                <option value="Admit Card">Admit Card</option>
+                <option value="Results">Results</option>
+                <option value="Government Scheme">Government Scheme</option>
+                <option value="Breaking News">Breaking News</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Short Excerpt</label>
+            <textarea class="form-control" id="f-excerpt" rows="2" placeholder="Brief description shown on listing page..."></textarea>
+          </div>
+          <div class="form-section-title">Content</div>
+          <div class="editor-toolbar" id="editor-toolbar">
+            <button class="tb-btn" onclick="fmt('bold')" title="Bold"><b>B</b></button>
+            <button class="tb-btn" onclick="fmt('italic')" title="Italic"><i>I</i></button>
+            <button class="tb-btn" onclick="fmt('underline')" title="Underline"><u>U</u></button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="fmtBlock('h1')" title="H1">H1</button>
+            <button class="tb-btn" onclick="fmtBlock('h2')" title="H2">H2</button>
+            <button class="tb-btn" onclick="fmtBlock('h3')" title="H3">H3</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="fmt('insertUnorderedList')" title="Bullet List"><i class="ti ti-list"></i></button>
+            <button class="tb-btn" onclick="fmt('insertOrderedList')" title="Numbered List"><i class="ti ti-list-numbers"></i></button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="fmtBlock('blockquote')" title="Quote"><i class="ti ti-quote"></i></button>
+            <button class="tb-btn" onclick="insertTable()" title="Table"><i class="ti ti-table"></i></button>
+            <button class="tb-btn" onclick="insertImage()" title="Insert Image"><i class="ti ti-photo"></i></button>
+            <button class="tb-btn" onclick="insertLink()" title="Link"><i class="ti ti-link"></i></button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="fmt('removeFormat')" title="Clear Formatting"><i class="ti ti-clear-formatting"></i></button>
+          </div>
+          <div class="editor-area" id="editor" contenteditable="true" data-placeholder="Start writing your blog content here..."></div>
+          <div class="form-section-title" style="margin-top:1rem">Featured Image</div>
+          <div class="img-upload-zone" id="upload-zone" onclick="document.getElementById('f-image-input').click()">
+            <input type="file" id="f-image-input" accept="image/*" onchange="handleImageUpload(this)" style="display:none">
+            <i class="ti ti-cloud-upload" style="font-size:2rem;color:var(--muted)"></i>
+            <p>Click to upload featured image</p>
+            <p style="font-size:.7rem">JPG, PNG, GIF up to 5MB</p>
+          </div>
+          <div id="img-preview" class="hidden" style="margin-top:.75rem">
+            <div class="img-preview-wrap">
+              <img id="preview-img" src="" alt="Preview">
+              <button class="img-remove" onclick="removeImage()"><i class="ti ti-x"></i></button>
+            </div>
+          </div>
+          <input type="hidden" id="f-image-data" value="">
+          <div class="form-actions">
+            <button class="btn btn-secondary" onclick="saveBlog('draft')"><i class="ti ti-device-floppy"></i> Save Draft</button>
+            <button class="btn btn-primary" onclick="saveBlog('published')"><i class="ti ti-send"></i> Publish</button>
+            <button class="btn btn-outline" onclick="showAdminPage('all-blogs');highlightNav('all-blogs')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DELETE MODAL -->
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal">
+      <h3>Delete Blog Post?</h3>
+      <p id="delete-modal-msg">This action cannot be undone.</p>
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PUBLIC SCREEN ===================== -->
+<div id="screen-public" class="screen">
+  <!-- NAVBAR -->
+  <nav class="pub-nav">
+    <div class="pub-nav-inner">
+      <span class="pub-brand">Gov<span>Jobs</span></span>
+      <ul class="pub-nav-links">
+        <li><a onclick="filterPub('all')">Home</a></li>
+        <li><a onclick="filterPub('Latest Jobs')">Latest Jobs</a></li>
+        <li><a onclick="filterPub('Admit Card')">Admit Cards</a></li>
+        <li><a onclick="filterPub('Results')">Results</a></li>
+        <li><a onclick="filterPub('Government Scheme')">Schemes</a></li>
+      </ul>
+      <div class="pub-search">
+        <i class="ti ti-search"></i>
+        <input type="text" id="pub-search" placeholder="Search blogs...">
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div id="pub-hero" class="hero">
+    <h1>📰 Government Jobs & Exam Portal</h1>
+    <p>Latest jobs, admit cards, results & schemes — updated daily</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong id="hero-total">0</strong>Blog Posts</div>
+      <div class="hero-stat"><strong>5</strong>Categories</div>
+      <div class="hero-stat"><strong>Daily</strong>Updates</div>
+    </div>
+  </div>
+
+  <!-- LISTING VIEW -->
+  <div id="pub-listing">
+    <div class="filter-bar">
+      <div class="filter-inner">
+        <span class="filter-label">Filter:</span>
+        <div class="filter-pills">
+          <button class="filter-btn active" data-cat="all" onclick="filterPub('all',this)">All Posts</button>
+          <button class="filter-btn" data-cat="Latest Jobs" onclick="filterPub('Latest Jobs',this)">💼 Latest Jobs</button>
+          <button class="filter-btn" data-cat="Admit Card" onclick="filterPub('Admit Card',this)">🪪 Admit Card</button>
+          <button class="filter-btn" data-cat="Results" onclick="filterPub('Results',this)">🏆 Results</button>
+          <button class="filter-btn" data-cat="Government Scheme" onclick="filterPub('Government Scheme',this)">🏛️ Schemes</button>
+          <button class="filter-btn" data-cat="Breaking News" onclick="filterPub('Breaking News',this)">📰 Breaking News</button>
+        </div>
+        <div class="date-filter">
+          <label><i class="ti ti-calendar" style="font-size:.9rem"></i></label>
+          <input type="date" id="pub-date-filter">
+        </div>
+      </div>
+    </div>
+    <div class="pub-section">
+      <div class="pub-section-head">
+        <h2>Latest Posts</h2>
+        <span class="result-count" id="pub-result-count"></span>
+      </div>
+      <div id="pub-spinner" class="spinner-wrap hidden"><div class="spinner"></div></div>
+      <div class="blog-grid" id="pub-grid"></div>
+      <div class="pagination" id="pub-pagination"></div>
+    </div>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div id="pub-detail" class="hidden">
+    <div class="detail-hero">
+      <div class="detail-breadcrumb">
+        <span onclick="backToListing()">Home</span> &rsaquo;
+        <span id="detail-cat-link"></span> &rsaquo;
+        <span id="detail-title-short" style="color:rgba(255,255,255,.5)"></span>
+      </div>
+      <span class="badge cat-default" id="detail-cat-badge" style="margin-bottom:.75rem;display:inline-block"></span>
+      <h1 class="detail-title" id="detail-title"></h1>
+      <div class="detail-meta">
+        <span id="detail-date"></span>
+        <span id="detail-read-time"></span>
+        <span id="detail-cat-meta"></span>
+      </div>
+    </div>
+    <div class="detail-body">
+      <button class="back-link" onclick="backToListing()"><i class="ti ti-arrow-left"></i> Back to all blogs</button>
+      <div id="detail-featured-wrap" class="hidden">
+        <img id="detail-featured" style="width:100%;max-height:360px;object-fit:cover;border-radius:var(--radius);margin-bottom:1.5rem">
+      </div>
+      <div class="detail-content" id="detail-content"></div>
+      <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.875rem">
+        <span id="detail-pub-date" style="font-size:.8rem;color:var(--muted)"></span>
+        <button class="btn btn-primary btn-sm" onclick="backToListing()">← All Blogs</button>
+      </div>
+    </div>
+    <div id="related-section" class="related-section hidden">
+      <div style="max-width:760px;margin:0 auto;padding:0 1rem">
+        <h2>Related Posts</h2>
+        <div class="blog-grid" id="related-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:.5rem;padding:.875rem">
+    <button class="btn btn-secondary btn-sm" onclick="showAdmin()"><i class="ti ti-settings"></i> Admin Panel</button>
+  </div>
+
+  <footer class="pub-footer">
+    <p style="margin-bottom:.25rem"><strong style="color:#fff">GovJobPortal</strong> — Your trusted source for government job updates</p>
+    <p>© 2025 GovJobPortal. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+// ===================== DATA STORE =====================
+let blogs = [
+  {id:1,title:'SSC CGL 2024 Notification Released – Check Eligibility & Dates',slug:'ssc-cgl-2024',excerpt:'The Staff Selection Commission has officially released the SSC CGL 2024 notification. Check eligibility criteria, important dates, vacancy details and how to apply online.',content:'<h2>SSC CGL 2024 Official Notification</h2><p>The Staff Selection Commission has released the official notification for Combined Graduate Level Examination 2024. Candidates meeting the eligibility criteria can apply online through the official SSC portal.</p><h3>Important Dates</h3><table><thead><tr><th>Event</th><th>Date</th></tr></thead><tbody><tr><td>Application Start</td><td>10 January 2024</td></tr><tr><td>Last Date to Apply</td><td>31 January 2024</td></tr><tr><td>Exam Date (Tier I)</td><td>June 2024</td></tr></tbody></table><h3>Eligibility Criteria</h3><ul><li><strong>Age:</strong> 18–32 years (relaxation as per government norms)</li><li><strong>Education:</strong> Bachelor\'s degree from a recognized university</li><li><strong>Nationality:</strong> Indian citizen</li></ul><blockquote>Apply early to avoid last-minute rush on the SSC portal. Make sure all documents are ready before filling the form.</blockquote><h3>How to Apply</h3><ol><li>Visit the official SSC portal: ssc.nic.in</li><li>Click on "Apply" under SSC CGL 2024</li><li>Register with your email and mobile number</li><li>Fill in all required details and upload documents</li><li>Pay application fee and submit</li></ol>',category:'Latest Jobs',status:'published',image:'',date:'2024-01-10'},
+  {id:2,title:'UPSC Civil Services 2024 Admit Card – Download Link Active',slug:'upsc-civil-2024-admit-card',excerpt:'The UPSC has activated the admit card download link for Civil Services Preliminary Examination 2024. Follow the step-by-step guide to download your hall ticket before the exam.',content:'<h2>UPSC Admit Card 2024</h2><p>The Union Public Service Commission has activated the admit card download link for Civil Services Preliminary Examination 2024. All registered candidates can download their admit card from the official UPSC website.</p><h3>How to Download</h3><ol><li>Visit the official website: upsc.gov.in</li><li>Click on the "e-Admit Card" link</li><li>Enter your registration ID and date of birth</li><li>Click submit and download your admit card</li><li>Print at least 2 copies</li></ol><h3>Documents to Carry</h3><ul><li>Printed admit card (both copies)</li><li>Valid government-issued photo ID (Aadhaar, PAN, Passport)</li><li>Recent passport-sized photograph</li></ul><blockquote><strong>Important:</strong> Candidates without a valid admit card and photo ID will not be allowed to enter the examination hall.</blockquote>',category:'Admit Card',status:'published',image:'',date:'2024-02-15'},
+  {id:3,title:'IBPS PO 2023 Final Result Declared – Check Your Scorecard Now',slug:'ibps-po-2023-result',excerpt:'The Institute of Banking Personnel Selection has declared the IBPS PO 2023 final result. Check your scorecard, cutoff marks, and next steps for document verification.',content:'<h2>IBPS PO 2023 Final Result</h2><p>The Institute of Banking Personnel Selection (IBPS) has officially declared the final result for Probationary Officers recruitment 2023. Candidates can now check their result on the official IBPS portal.</p><h3>Result Statistics</h3><table><thead><tr><th>Category</th><th>Vacancies</th><th>Selected</th></tr></thead><tbody><tr><td>General (UR)</td><td>2000</td><td>1987</td></tr><tr><td>OBC</td><td>1200</td><td>1198</td></tr><tr><td>SC</td><td>600</td><td>599</td></tr><tr><td>ST</td><td>300</td><td>298</td></tr><tr><td>EWS</td><td>400</td><td>397</td></tr></tbody></table><h3>How to Check Result</h3><ol><li>Go to ibps.in</li><li>Click on "CRP PO/MT XIII Result"</li><li>Enter your Registration Number and Date of Birth</li><li>Download and save the scorecard</li></ol>',category:'Results',status:'published',image:'',date:'2024-03-01'},
+  {id:4,title:'PM Kisan 16th Installment – ₹2000 To Be Credited This Month',slug:'pm-kisan-16th-installment',excerpt:'The government has announced the date for PM Kisan Samman Nidhi 16th installment. Check if your name is on the beneficiary list and ensure your bank account is linked with Aadhaar.',content:'<h2>PM Kisan Samman Nidhi – 16th Installment</h2><p>The Government of India has announced that the 16th installment of PM Kisan Samman Nidhi scheme will be credited this month. Eligible farmers will receive ₹2,000 directly in their registered bank accounts.</p><h3>Key Details</h3><ul><li><strong>Amount:</strong> ₹2,000 per installment</li><li><strong>Annual Benefit:</strong> ₹6,000 (in 3 installments)</li><li><strong>Mode:</strong> Direct Bank Transfer (DBT)</li><li><strong>Beneficiaries:</strong> Over 11 crore farmers</li></ul><h3>How to Check Status</h3><ol><li>Visit pmkisan.gov.in</li><li>Click on "Beneficiary Status"</li><li>Enter Aadhaar Number, Account Number, or Mobile Number</li><li>Click "Get Data" to see your status</li></ol><blockquote>Make sure your bank account is linked with Aadhaar. If not, visit your nearest bank branch immediately.</blockquote>',category:'Government Scheme',status:'published',image:'',date:'2024-03-10'},
+  {id:5,title:'RRB NTPC 2024: 11558 Vacancies Released – Apply Now',slug:'rrb-ntpc-2024',excerpt:'Indian Railways has announced massive recruitment for Non-Technical Popular Categories posts. A total of 11,558 vacancies are available across different railway zones.',content:'<h2>RRB NTPC 2024 Recruitment</h2><p>Indian Railways Recruitment Board has announced a massive recruitment drive for Non-Technical Popular Categories (NTPC) posts 2024. A total of 11,558 vacancies are available across various railway zones in India.</p><h3>Vacancy Details</h3><table><thead><tr><th>Post</th><th>Vacancies</th><th>Pay Level</th></tr></thead><tbody><tr><td>Junior Clerk cum Typist</td><td>990</td><td>Level 2</td></tr><tr><td>Accounts Clerk</td><td>361</td><td>Level 2</td></tr><tr><td>Commercial cum Ticket Clerk</td><td>2022</td><td>Level 3</td></tr><tr><td>Goods Guard</td><td>3144</td><td>Level 5</td></tr><tr><td>Senior Clerk cum Typist</td><td>2598</td><td>Level 5</td></tr></tbody></table><p>Apply online through the official RRB portal before the last date.</p>',category:'Latest Jobs',status:'published',image:'',date:'2024-03-20'},
+  {id:6,title:'Rajasthan Police Constable 2024 – 3578 Posts Notification',slug:'rajasthan-police-2024',excerpt:'Rajasthan Police has released notification for 3578 Constable posts. Check eligibility, syllabus, physical standards and application process.',content:'<h2>Rajasthan Police Constable 2024</h2><p>The Rajasthan Police has released the official notification for 3578 Constable posts. This is a great opportunity for candidates looking to join the police force in Rajasthan.</p><h3>Eligibility</h3><ul><li><strong>Age:</strong> 18–23 years</li><li><strong>Education:</strong> 10th pass (Senior Secondary preferred)</li><li><strong>Physical Standards:</strong> As per department norms</li></ul><blockquote>Candidates from Ajmer and other districts of Rajasthan are encouraged to apply.</blockquote><p>The selection process includes a written exam, physical efficiency test, and medical examination.</p>',category:'Latest Jobs',status:'published',image:'',date:'2024-04-01'},
+];
+
+let nextId = 7;
+let deletePendingId = null;
+
+// Public state
+let pubFilter = {cat:'all', search:'', date:''};
+let pubPage = 1;
+const PER_PAGE = 6;
+
+// ===================== AUTH =====================
+function doLogin(){
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value.trim();
+  const err = document.getElementById('login-error');
+  if(u==='admin' && p==='admin123'){
+    err.classList.add('hidden');
+    showScreen('screen-admin');
+    renderDashboard();
+  } else {
+    err.textContent='Invalid username or password.';
+    err.classList.remove('hidden');
+  }
+}
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+function doLogout(){
+  showScreen('screen-login');
+}
+
+// ===================== SCREEN NAV =====================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none'});
+  const s=document.getElementById(id);
+  s.classList.add('active');
+  if(id==='screen-admin') s.style.display='flex';
+  else if(id==='screen-public') {s.style.display='block'; renderPubGrid();}
+  else s.style.display='flex';
+}
+function showPublic(){showScreen('screen-public'); renderPubGrid();}
+function showAdmin(){showScreen('screen-admin'); renderDashboard();}
+
+// ===================== ADMIN PAGE NAV =====================
+function showAdminPage(name, el){
+  document.querySelectorAll('.admin-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const titles={'dashboard':'Dashboard','all-blogs':'All Blog Posts','add-blog':'Blog Editor'};
+  document.getElementById('topbar-title').textContent = titles[name]||'';
+  if(name==='all-blogs') renderBlogsTable();
+  if(name==='dashboard') renderDashboard();
+}
+
+function highlightNav(name){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const map={'dashboard':0,'all-blogs':1,'add-blog':2};
+  const items=document.querySelectorAll('.nav-item');
+  if(items[map[name]]) items[map[name]].classList.add('active');
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard(){
+  const pub=blogs.filter(b=>b.status==='published').length;
+  const draft=blogs.filter(b=>b.status==='draft').length;
+  document.getElementById('stat-total').textContent=blogs.length;
+  document.getElementById('stat-pub').textContent=pub;
+  document.getElementById('stat-draft').textContent=draft;
+  const recent=blogs.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+  const tbody=document.getElementById('dash-tbody');
+  tbody.innerHTML=recent.map(b=>`
+    <tr>
+      <td class="title-cell" title="${esc(b.title)}">${esc(b.title)}</td>
+      <td><span class="badge ${catClass(b.category)}">${esc(b.category)}</span></td>
+      <td><span class="badge badge-${b.status}">${cap(b.status)}</span></td>
+      <td>${fmtDate(b.date)}</td>
+      <td><div class="action-cell">
+        <button class="btn btn-sm btn-secondary" onclick="editBlog(${b.id})"><i class="ti ti-edit"></i> Edit</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+// ===================== BLOGS TABLE =====================
+function renderBlogsTable(){
+  const s=(document.getElementById('admin-search').value||'').toLowerCase();
+  const cat=document.getElementById('admin-cat-filter').value;
+  const status=document.getElementById('admin-status-filter').value;
+  let filtered=blogs.filter(b=>{
+    if(s && !b.title.toLowerCase().includes(s) && !b.excerpt.toLowerCase().includes(s)) return false;
+    if(cat && b.category!==cat) return false;
+    if(status && b.status!==status) return false;
+    return true;
+  }).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('blogs-count-label').textContent=`${filtered.length} post${filtered.length!==1?'s':''} found`;
+  document.getElementById('blogs-tbody').innerHTML=filtered.length===0
+    ? `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">No blogs found. <span style="color:var(--accent);cursor:pointer" onclick="showAdminPage('add-blog');resetBlogForm();highlightNav('add-blog')">Create one →</span></td></tr>`
+    : filtered.map((b,i)=>`
+      <tr>
+        <td style="color:var(--muted);font-size:.76rem">${i+1}</td>
+        <td><div class="title-cell" title="${esc(b.title)}">${esc(b.title)}</div></td>
+        <td><span class="badge ${catClass(b.category)}">${esc(b.category)}</span></td>
+        <td><span class="badge badge-${b.status}" style="cursor:pointer" onclick="toggleStatus(${b.id})" title="Click to toggle">${cap(b.status)}</span></td>
+        <td style="white-space:nowrap">${fmtDate(b.date)}</td>
+        <td><div class="action-cell">
+          <button class="btn btn-sm btn-secondary" onclick="editBlog(${b.id})"><i class="ti ti-edit"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="openDeleteModal(${b.id},'${esc(b.title).replace(/'/g,"\\'")}')"><i class="ti ti-trash"></i></button>
+        </div></td>
+      </tr>
+    `).join('');
+}
+
+function toggleStatus(id){
+  const b=blogs.find(x=>x.id===id);
+  if(!b) return;
+  b.status=b.status==='published'?'draft':'published';
+  renderBlogsTable();
+  renderDashboard();
+  showToast(`Blog ${b.status==='published'?'published':'moved to draft'}!`,'success');
+}
+
+// ===================== DELETE =====================
+function openDeleteModal(id, title){
+  deletePendingId=id;
+  document.getElementById('delete-modal-msg').textContent=`Are you sure you want to delete "${title}"? This cannot be undone.`;
+  document.getElementById('delete-modal').classList.add('open');
+}
+function closeDeleteModal(){document.getElementById('delete-modal').classList.remove('open');deletePendingId=null;}
+function confirmDelete(){
+  if(!deletePendingId) return;
+  blogs=blogs.filter(b=>b.id!==deletePendingId);
+  closeDeleteModal();
+  renderBlogsTable();
+  renderDashboard();
+  showToast('Blog deleted.','success');
+}
+
+// ===================== BLOG FORM =====================
+function resetBlogForm(){
+  document.getElementById('edit-blog-id').value='';
+  document.getElementById('f-title').value='';
+  document.getElementById('f-slug').value='';
+  document.getElementById('f-cat').value='';
+  document.getElementById('f-excerpt').value='';
+  document.getElementById('editor').innerHTML='';
+  document.getElementById('f-image-data').value='';
+  document.getElementById('img-preview').classList.add('hidden');
+  document.getElementById('form-page-title').textContent='New Blog Post';
+  document.getElementById('admin-form-flash').classList.add('hidden');
+  showAdminPage('add-blog');
+}
+
+function editBlog(id){
+  const b=blogs.find(x=>x.id===id);
+  if(!b) return;
+  document.getElementById('edit-blog-id').value=id;
+  document.getElementById('f-title').value=b.title;
+  document.getElementById('f-slug').value=b.slug;
+  document.getElementById('f-cat').value=b.category;
+  document.getElementById('f-excerpt').value=b.excerpt;
+  document.getElementById('editor').innerHTML=b.content;
+  document.getElementById('f-image-data').value=b.image||'';
+  document.getElementById('form-page-title').textContent='Edit Blog Post';
+  if(b.image){
+    document.getElementById('preview-img').src=b.image;
+    document.getElementById('img-preview').classList.remove('hidden');
+  } else {
+    document.getElementById('img-preview').classList.add('hidden');
+  }
+  document.getElementById('admin-form-flash').classList.add('hidden');
+  showAdminPage('add-blog');
+  highlightNav('add-blog');
+}
+
+function autoSlug(){
+  const t=document.getElementById('f-title').value;
+  document.getElementById('f-slug').value=t.toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').slice(0,60);
+}
+
+function saveBlog(status){
+  const id=document.getElementById('edit-blog-id').value;
+  const title=document.getElementById('f-title').value.trim();
+  const cat=document.getElementById('f-cat').value;
+  const flash=document.getElementById('admin-form-flash');
+  if(!title){flash.innerHTML='<div class="alert alert-danger">Title is required.</div>';flash.classList.remove('hidden');return;}
+  if(!cat){flash.innerHTML='<div class="alert alert-danger">Please select a category.</div>';flash.classList.remove('hidden');return;}
+  const slug=document.getElementById('f-slug').value||title.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-');
+  const excerpt=document.getElementById('f-excerpt').value.trim();
+  const content=document.getElementById('editor').innerHTML.trim();
+  const image=document.getElementById('f-image-data').value;
+  if(id){
+    const b=blogs.find(x=>x.id===parseInt(id));
+    if(b){Object.assign(b,{title,slug,category:cat,excerpt,content,image,status,date:b.date});}
+    showToast('Blog updated!','success');
+  } else {
+    blogs.unshift({id:nextId++,title,slug,category:cat,excerpt,content,image,status,date:new Date().toISOString().split('T')[0]});
+    showToast('Blog '+(status==='published'?'published':'saved as draft')+'!','success');
+  }
+  flash.classList.add('hidden');
+  showAdminPage('all-blogs');
+  highlightNav('all-blogs');
+  renderBlogsTable();
+  renderDashboard();
+}
+
+// ===================== RICH EDITOR =====================
+const editor=document.getElementById('editor');
+function fmt(cmd){document.execCommand(cmd,false,null);editor.focus();}
+function fmtBlock(tag){document.execCommand('formatBlock',false,tag);editor.focus();}
+function insertTable(){
+  const r=parseInt(prompt('Rows:','3')||3);
+  const c=parseInt(prompt('Columns:','3')||3);
+  if(isNaN(r)||isNaN(c)) return;
+  let html='<table><thead><tr>';
+  for(let i=0;i<c;i++) html+=`<th>Header ${i+1}</th>`;
+  html+='</tr></thead><tbody>';
+  for(let i=0;i<r;i++){html+='<tr>';for(let j=0;j<c;j++) html+=`<td>Cell</td>`;html+='</tr>';}
+  html+='</tbody></table><p></p>';
+  document.execCommand('insertHTML',false,html);
+  editor.focus();
+}
+function insertImage(){
+  const url=prompt('Image URL:','https://via.placeholder.com/600x300');
+  if(url) document.execCommand('insertHTML',false,`<img src="${url}" style="max-width:100%;border-radius:6px">`);
+  editor.focus();
+}
+function insertLink(){
+  const url=prompt('URL:','https://');
+  if(url) document.execCommand('createLink',false,url);
+  editor.focus();
+}
+function handleImageUpload(input){
+  const file=input.files[0];
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    document.getElementById('f-image-data').value=e.target.result;
+    document.getElementById('preview-img').src=e.target.result;
+    document.getElementById('img-preview').classList.remove('hidden');
+  };
+  r.readAsDataURL(file);
+}
+function removeImage(){
+  document.getElementById('f-image-data').value='';
+  document.getElementById('preview-img').src='';
+  document.getElementById('img-preview').classList.add('hidden');
+}
+
+// ===================== PUBLIC FRONTEND (jQuery AJAX) =====================
+function filterPub(cat, el){
+  pubFilter.cat=cat;
+  pubPage=1;
+  $('.filter-btn').removeClass('active');
+  if(el){ $(el).addClass('active'); }
+  else { $(`.filter-btn[data-cat="${cat}"]`).addClass('active'); }
+  applyPubFilters();
+}
+
+function pubSearch(val){
+  pubFilter.search=val;
+  pubPage=1;
+  applyPubFilters();
+}
+
+// Simulates AJAX call: shows spinner, processes filter, updates DOM — all via jQuery
+function applyPubFilters(){
+  pubFilter.date=$('#pub-date-filter').val();
+  // Show spinner (AJAX simulation)
+  $('#pub-grid').empty();
+  $('#pub-spinner').removeClass('hidden');
+  // Simulate async network delay (like a real $.ajax call to PHP backend)
+  setTimeout(function(){
+    $('#pub-spinner').addClass('hidden');
+    renderPubGrid();
+  }, 280);
+}
+
+// Exposed jQuery AJAX-style helper (mirrors what PHP backend call would look like)
+function ajaxFetchBlogs(filters, callback){
+  // In production PHP build: $.ajax({ url:'api/blogs.php', data:filters, success:callback })
+  // Here we simulate the server response using local data:
+  const result = getPubFiltered();
+  callback(result);
+}
+
+function getPubFiltered(){
+  const pub=blogs.filter(b=>b.status==='published');
+  return pub.filter(b=>{
+    if(pubFilter.cat!=='all' && b.category!==pubFilter.cat) return false;
+    if(pubFilter.search && !b.title.toLowerCase().includes(pubFilter.search.toLowerCase()) && !b.excerpt.toLowerCase().includes(pubFilter.search.toLowerCase())) return false;
+    if(pubFilter.date && b.date!==pubFilter.date) return false;
+    return true;
+  }).sort((a,b2)=>new Date(b2.date)-new Date(a.date));
+}
+
+function renderPubGrid(){
+  const filtered=getPubFiltered();
+  const total=filtered.length;
+  document.getElementById('hero-total').textContent=blogs.filter(b=>b.status==='published').length;
+  document.getElementById('pub-result-count').textContent=`${total} blog${total!==1?'s':''} found`;
+  const paged=filtered.slice((pubPage-1)*PER_PAGE, pubPage*PER_PAGE);
+  const grid=document.getElementById('pub-grid');
+  if(paged.length===0){
+    grid.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><h3>No blogs found</h3><p>Try a different category or search term</p></div>`;
+  } else {
+    grid.innerHTML=paged.map(b=>buildPubCard(b)).join('');
+  }
+  renderPubPagination(total);
+}
+
+function buildPubCard(b){
+  const thumb=b.image?`<img src="${b.image}" alt="${esc(b.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:`<span>${catEmoji(b.category)}</span>`;
+  return `<div class="blog-card" onclick="openDetail(${b.id})">
+    <div class="card-thumb">${thumb}<div class="card-cat-badge"><span class="badge ${catClass(b.category)}">${esc(b.category)}</span></div></div>
+    <div class="card-body-pub">
+      <h3 class="card-title-pub">${esc(b.title)}</h3>
+      <p class="card-excerpt-pub">${esc(b.excerpt||b.content.replace(/<[^>]*>/g,'').slice(0,150))}</p>
+      <div class="card-footer-pub">
+        <span class="card-date-pub">📅 ${fmtDate(b.date)}</span>
+        <button class="btn-read" onclick="event.stopPropagation();openDetail(${b.id})">Read More →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPubPagination(total){
+  const pages=Math.ceil(total/PER_PAGE);
+  const el=document.getElementById('pub-pagination');
+  if(pages<=1){el.innerHTML='';return;}
+  let html='';
+  if(pubPage>1) html+=`<button class="page-btn" onclick="pubGo(${pubPage-1})">← Prev</button>`;
+  for(let i=1;i<=pages;i++){
+    if(i===1||i===pages||Math.abs(i-pubPage)<=1) html+=`<button class="page-btn ${i===pubPage?'active':''}" onclick="pubGo(${i})">${i}</button>`;
+    else if(Math.abs(i-pubPage)===2) html+=`<span style="color:var(--muted);padding:0 4px">…</span>`;
+  }
+  if(pubPage<pages) html+=`<button class="page-btn" onclick="pubGo(${pubPage+1})">Next →</button>`;
+  el.innerHTML=html;
+}
+
+function pubGo(p){pubPage=p;renderPubGrid();document.getElementById('pub-listing').scrollIntoView({behavior:'smooth'});}
+
+function openDetail(id){
+  const b=blogs.find(x=>x.id===id);
+  if(!b) return;
+  document.getElementById('pub-listing').classList.add('hidden');
+  document.getElementById('pub-hero').classList.add('hidden');
+  const det=document.getElementById('pub-detail');
+  det.classList.remove('hidden');
+  document.getElementById('detail-cat-link').textContent=b.category;
+  document.getElementById('detail-title-short').textContent=b.title.slice(0,40)+'...';
+  document.getElementById('detail-cat-badge').textContent=b.category;
+  document.getElementById('detail-cat-badge').className=`badge ${catClass(b.category)}`;
+  document.getElementById('detail-title').textContent=b.title;
+  document.getElementById('detail-date').textContent='📅 '+fmtDate(b.date);
+  const words=b.content.replace(/<[^>]*>/g,'').split(/\s+/).length;
+  document.getElementById('detail-read-time').textContent='⏱️ '+Math.max(1,Math.ceil(words/200))+' min read';
+  document.getElementById('detail-cat-meta').textContent='📂 '+b.category;
+  document.getElementById('detail-pub-date').textContent='Published on '+fmtDate(b.date);
+  if(b.image){
+    document.getElementById('detail-featured').src=b.image;
+    document.getElementById('detail-featured-wrap').classList.remove('hidden');
+  } else {
+    document.getElementById('detail-featured-wrap').classList.add('hidden');
+  }
+  document.getElementById('detail-content').innerHTML=b.content;
+  // Related
+  const related=blogs.filter(x=>x.status==='published'&&x.category===b.category&&x.id!==id).slice(0,3);
+  if(related.length){
+    document.getElementById('related-grid').innerHTML=related.map(r=>buildPubCard(r)).join('');
+    document.getElementById('related-section').classList.remove('hidden');
+  } else {
+    document.getElementById('related-section').classList.add('hidden');
+  }
+  det.scrollIntoView({behavior:'smooth'});
+}
+
+function backToListing(){
+  document.getElementById('pub-detail').classList.add('hidden');
+  document.getElementById('pub-listing').classList.remove('hidden');
+  document.getElementById('pub-hero').classList.remove('hidden');
+}
+
+// ===================== HELPERS =====================
+function catClass(cat){
+  const m={'Latest Jobs':'cat-jobs','Admit Card':'cat-admit','Results':'cat-results','Government Scheme':'cat-scheme','Breaking News':'cat-news'};
+  return m[cat]||'cat-default';
+}
+function catEmoji(cat){
+  const m={'Latest Jobs':'💼','Admit Card':'🪪','Results':'🏆','Government Scheme':'🏛️','Breaking News':'📰'};
+  return m[cat]||'📝';
+}
+function fmtDate(d){
+  if(!d) return '';
+  const dt=new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+function esc(s){if(!s) return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function cap(s){return s?s[0].toUpperCase()+s.slice(1):'';}
+
+function showToast(msg,type){
+  const t=document.createElement('div');
+  t.className=`toast toast-${type}`;t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// Init — jQuery document ready
+$(document).ready(function(){
+  // Enter key on login
+  $('#login-pass').on('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+  // Admin search via jQuery
+  $('#admin-search').on('input', function(){ renderBlogsTable(); });
+  $('#admin-cat-filter, #admin-status-filter').on('change', function(){ renderBlogsTable(); });
+  // Public search via jQuery
+  $('#pub-search').on('input', function(){ pubSearch($(this).val()); });
+  // Public date filter via jQuery
+  $('#pub-date-filter').on('change', function(){ applyPubFilters(); });
+});
+
+// Also keep original keydown for login screen Enter key (outside ready block fallback)
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('screen-login').classList.contains('active'))doLogin();});
+</script>
+</body>
+</html>
