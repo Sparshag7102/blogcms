@@ -130,6 +130,8 @@ This submission is a **fully functional frontend prototype** that demonstrates a
 
 The jQuery AJAX pattern is fully implemented and documented in code comments.
 
+Due to static hosting constraints on GitHub Pages, this submission demonstrates the complete UI/UX and jQuery/AJAX interaction layer. A PHP+MySQL backend integration is documented above and available on request.
+
 ---
 
 ## 📸 Screenshots
